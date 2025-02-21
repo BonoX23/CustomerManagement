@@ -52,7 +52,7 @@ namespace Domain.Entities
         /// Associar Cliente
         /// </summary>
         /// <param name="customerId"></param>
-        public void AssociarCliente(int customerId)
+        public void AssociateClient(int customerId)
         {
             CustomerId = customerId;
         }

@@ -3,7 +3,7 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers.Cliente
+namespace WebApi.Controllers.Customer
 {
     [Route("api/v1")]
     [ApiController]
@@ -25,9 +25,9 @@ namespace WebApi.Controllers.Cliente
         [HttpPost]
         [Route("customer")]
         [AllowAnonymous]
-        public async Task<IActionResult> AddCliente([FromBody] CustomerDto customer)
+        public async Task<IActionResult> AddCustomer([FromBody] CustomerDto customer)
         {
-            return Ok(await _service.UpdateCustomerAsync(customer));
+            return Ok(await _service.AddCustomerAsync(customer));
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace WebApi.Controllers.Cliente
         /// <returns></returns>
         [HttpGet]
         [Route("customer/{customerId}")]
-        public IActionResult GetClienteById(int customerId)
+        public IActionResult GetCustomer(int customerId)
         {
             return Ok(_service.GetCustomerById(UserLoggedId, customerId));
         }
@@ -49,7 +49,7 @@ namespace WebApi.Controllers.Cliente
         /// <returns></returns>
         [HttpDelete]
         [Route("customer/{customerId}")]
-        public async Task<IActionResult> DeleteCliente(int customerId)
+        public async Task<IActionResult> DeleteCustomer(int customerId)
         {
             await _service.DeleteCustomerAsync(UserLoggedId, customerId);
             return Ok(new Tuple<string>("Cliente deletado com sucesso"));
@@ -63,7 +63,7 @@ namespace WebApi.Controllers.Cliente
         /// <returns></returns>
         [HttpPut]
         [Route("customer/{customerId}")]
-        public async Task<IActionResult> UpdateCliente(int customerId, [FromBody] CustomerDto customer)
+        public async Task<IActionResult> UpdateCustomer(int customerId, [FromBody] CustomerDto customer)
         {
             await _service.UpdateCustomerAsync(UserLoggedId, customerId, customer);
             return Ok(new Tuple<string>("Cliente atualizado com sucesso"));

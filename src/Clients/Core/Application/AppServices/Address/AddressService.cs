@@ -10,32 +10,32 @@ namespace Application.AppServices
     {
         private readonly INotificationContext _notification;
         private readonly IAddressRepository _repository;
-        private readonly ICustomerRepository _repositoryCliente;
+        private readonly ICustomerRepository _customerRepository;
 
         public AddressService(INotificationContext notification,
                                  IAddressRepository repository,
-                                 ICustomerRepository repositoryCliente)
+                                 ICustomerRepository customerRepository)
         {
             _repository = repository;
             _notification = notification;
-            _repositoryCliente = repositoryCliente;
+            _customerRepository = customerRepository;
         }
 
-        public async Task<Tuple<string>> AddAddressAsync(int userId, int clienteId, AddressDto address)
+        public async Task<Tuple<string>> AddAddressAsync(int userId, int customerId, AddressDto address)
         {
-            var clienteDomain = _repositoryCliente.GetCustomerById(clienteId);
+            var customerDomain = _customerRepository.GetCustomerById(customerId);
 
-            if (clienteDomain == null)
+            if (customerDomain == null)
                 _notification.AddNotification(new Notification("Cliente informado não existe"));
 
-            if (clienteDomain != null && !clienteDomain.Users.All(x => x.Id == userId))
+            if (customerDomain != null && !customerDomain.Users.All(x => x.Id == userId))
             {
                 _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
             }
 
             if (!_notification.HasNotifications)
             {
-                var addressDomain = new Address(address.Place, clienteId);
+                var addressDomain = new Address(address.Place, customerId);
 
                 addressDomain.Validate();
 
@@ -48,7 +48,7 @@ namespace Application.AppServices
                 }
             }
 
-            return new Tuple<string>($"Logradouro adicionado ao cliente {clienteDomain.Name} com sucesso");
+            return new Tuple<string>($"Logradouro adicionado ao cliente {customerDomain.Name} com sucesso");
         }
 
         public async Task DeleteAddressAsync(int userId, int addressId)
@@ -95,7 +95,7 @@ namespace Application.AppServices
 
         public async Task<List<AddressResponseDto>> GetAddressesByCustomerIdAsync(int userId, int customerId)
         {
-            var customerDomain = _repositoryCliente.GetCustomerById(customerId);
+            var customerDomain = _customerRepository.GetCustomerById(customerId);
 
             if (customerDomain == null)
                 _notification.AddNotification(new Notification("Cliente informado não existe"));
@@ -118,14 +118,14 @@ namespace Application.AppServices
                 }).ToList();
         }
 
-        public async Task UpdateAddressAsync(int userId, int clienteId, int addressId, AddressDto address)
+        public async Task UpdateAddressAsync(int userId, int customerId, int addressId, AddressDto address)
         {
             var addressDomain = _repository.GetAddressById(addressId);
 
             if (addressDomain == null)
                 _notification.AddNotification(new Notification("Logradouro não existe"));
 
-            if (addressDomain != null && !addressDomain.Customer.Users.All(x => x.Id == userId) && addressDomain.CustomerId != clienteId)
+            if (addressDomain != null && !addressDomain.Customer.Users.All(x => x.Id == userId) && addressDomain.CustomerId != customerId)
             {
                 _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
             }

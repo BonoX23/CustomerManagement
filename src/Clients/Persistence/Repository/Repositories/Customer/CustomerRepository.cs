@@ -31,16 +31,16 @@ namespace Repository.Repositories
                 .Include(x => x.Places)
                 .FirstOrDefault(x => x.Users.Any(u => u.Id == userId));
 
-        public Customer GetCustomerById(int clienteId) =>
+        public Customer GetCustomerById(int customerId) =>
             _context.Customer
                 .Include(x => x.Users)
                 .Include(x => x.Places)
-                .FirstOrDefault(x => x.Id == clienteId);
+                .FirstOrDefault(x => x.Id == customerId);
 
         public bool IsEmailValid(string email) =>
             _context.Customer.Any(x => x.Email == email);
 
-        public bool IsEmailValidForUpdate(int clienteId, string email) =>
-            _context.Customer.Any(x => x.Email == email && x.Id != clienteId);
+        public bool IsEmailValidForUpdate(int customerId, string email) =>
+            _context.Customer.Any(x => x.Email == email && x.Id != customerId);
     }
 }

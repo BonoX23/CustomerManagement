@@ -19,7 +19,7 @@ namespace Application.AppServices
             _notification = notification;
         }
 
-        public async Task<Tuple<string>> UpdateCustomerAsync(CustomerDto customer)
+        public async Task<Tuple<string>> AddCustomerAsync(CustomerDto customer)
         {
             if (!string.IsNullOrEmpty(customer.Email) && _repository.IsEmailValid(customer.Email))
                 _notification.AddNotification(new Notification("E-mail já cadastrado"));

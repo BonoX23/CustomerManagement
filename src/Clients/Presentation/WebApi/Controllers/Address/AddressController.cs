@@ -25,7 +25,7 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpPost]
         [Route("place/{customerId}")]
-        public async Task<IActionResult> AddLogradouro(int customerId, [FromBody] AddressDto address)
+        public async Task<IActionResult> AddAddress(int customerId, [FromBody] AddressDto address)
         {
             return Ok(await _service.AddAddressAsync(UserLoggedId, customerId, address));
         }
@@ -37,7 +37,7 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpGet]
         [Route("place/{addressId}")]
-        public IActionResult GetLogradouroById(int addressId)
+        public IActionResult GetAddress(int addressId)
         {
             return Ok(_service.GetAddressById(UserLoggedId, addressId));
         }
@@ -49,7 +49,7 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpGet]
         [Route("places/{customerId}")]
-        public async Task<IActionResult> GetLogradourosByClienteId(int customerId)
+        public async Task<IActionResult> GetAddressByCustomerId(int customerId)
         {
             return Ok(await _service.GetAddressesByCustomerIdAsync(UserLoggedId, customerId));
         }
@@ -61,7 +61,7 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpDelete]
         [Route("place/{addressId}")]
-        public async Task<IActionResult> DeleteLogradouro(int addressId)
+        public async Task<IActionResult> DeleteAddress(int addressId)
         {
             await _service.DeleteAddressAsync(UserLoggedId, addressId);
             return Ok(new Tuple<string>("Logradouro deletado com sucesso"));
@@ -76,7 +76,7 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpPut]
         [Route("place/{customerId}/{addressId}")]
-        public async Task<IActionResult> UpdateLogradouro(int customerId, int addressId, [FromBody] AddressDto address)
+        public async Task<IActionResult> UpdateAddress(int customerId, int addressId, [FromBody] AddressDto address)
         {
             await _service.UpdateAddressAsync(UserLoggedId, customerId, addressId, address);
             return Ok(new Tuple<string>("Logradouro atualizado com sucesso"));
