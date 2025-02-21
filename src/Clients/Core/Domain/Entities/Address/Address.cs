@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces;
 using Domain.Utils;
 using FluentValidation;
+using Newtonsoft.Json;
 
 namespace Domain.Entities
 {
@@ -12,6 +13,8 @@ namespace Domain.Entities
         public DateTime? UpdateDate { get; set; }
 
         public int CustomerId { get; private set; }
+
+        [JsonIgnore]
         public virtual Customer Customer { get; set; }
 
         public Address()

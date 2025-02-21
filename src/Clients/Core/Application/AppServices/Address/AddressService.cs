@@ -53,10 +53,12 @@ namespace Application.AppServices
 
         public async Task DeleteAddressAsync(int userId, int addressId)
         {
-            var addressDomain = _repository.GetAddressById(addressId);
+            var addressDomain = await _repository.GetAddressById(addressId);
 
             if (addressDomain == null)
+            {
                 _notification.AddNotification(new Notification("Logradouro não existe"));
+            }
 
             if (addressDomain != null && !addressDomain.Customer.Users.All(x => x.Id == userId))
             {
@@ -66,32 +68,34 @@ namespace Application.AppServices
             if (_notification.HasNotifications)
                 return;
 
-            _repository.DeleteAddress(addressDomain);
+            await _repository.DeleteAddress(addressId);
             await _repository.UnitOfWork.Commit();
         }
 
-        public AddressResponseDto GetAddressById(int userId, int addressId)
+        public async Task<AddressResponseDto> GetAddressById(int userId, int addressId)
         {
-            var addressDomain = _repository.GetAddressById(addressId);
+            var addressDomain = await _repository.GetAddressById(addressId);
 
             if (addressDomain == null)
-                _notification.AddNotification(new Notification("Logradouro não existe"));
-
-            if (addressDomain != null && !addressDomain.Customer.Users.All(x => x.Id == userId))
             {
-                _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
+                _notification.AddNotification(new Notification("Logradouro não existe"));
+                return null;
             }
 
-            if (_notification.HasNotifications)
+            if (!addressDomain.Customer.Users.Any(x => x.Id == userId))
+            {
+                _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
                 return null;
-            else
-                return new AddressResponseDto
-                {
-                    Id = addressDomain.Id,
-                    CustomerId = addressDomain.CustomerId,
-                    Place = addressDomain.Place,
-                };
+            }
+
+            return new AddressResponseDto
+            {
+                Id = addressDomain.Id,
+                CustomerId = addressDomain.CustomerId,
+                Place = addressDomain.Place,
+            };
         }
+
 
         public async Task<List<AddressResponseDto>> GetAddressesByCustomerIdAsync(int userId, int customerId)
         {
@@ -120,12 +124,14 @@ namespace Application.AppServices
 
         public async Task UpdateAddressAsync(int userId, int customerId, int addressId, AddressDto address)
         {
-            var addressDomain = _repository.GetAddressById(addressId);
+            var addressDomain = await _repository.GetAddressById(addressId);
 
             if (addressDomain == null)
                 _notification.AddNotification(new Notification("Logradouro não existe"));
 
-            if (addressDomain != null && !addressDomain.Customer.Users.All(x => x.Id == userId) && addressDomain.CustomerId != customerId)
+            if (addressDomain != null &&
+                !addressDomain.Customer.Users.All(x => x.Id == userId) &&
+                addressDomain.CustomerId != customerId)
             {
                 _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
             }
@@ -133,17 +139,19 @@ namespace Application.AppServices
             if (!_notification.HasNotifications)
             {
                 addressDomain.Update(address.Place);
-
                 addressDomain.Validate();
 
                 if (addressDomain.Invalid)
+                {
                     _notification.AddNotificationFromValidationResult(addressDomain.ValidationResult);
+                }
                 else
                 {
-                    _repository.UpdateAddress(addressDomain);
+                    await _repository.UpdateAddress(addressDomain);
                     await _repository.UnitOfWork.Commit();
                 }
             }
         }
+
     }
 }

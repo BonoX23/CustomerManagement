@@ -23,73 +23,124 @@ namespace Repository.Repositories
 
         public async Task AddAddressAsync(Address address)
         {
-            using (var conn = new SqlConnection(_databaseConnection))
+            await using var conn = new SqlConnection(_databaseConnection);
+            try
             {
-                try
-                {
-                    conn.Open();
+                await conn.OpenAsync();
 
-                    var sql = "SPI_Address";
+                var sql = "SPI_Address";
 
-                    await conn.ExecuteAsync(sql, new { CustomerId = address.CustomerId, Place = address.Place }, commandType: System.Data.CommandType.StoredProcedure); // Ajustado os nomes dos parâmetros
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                await conn.ExecuteAsync(sql,
+                    new { CustomerId = address.CustomerId, Place = address.Place },
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
-
-        public async void UpdateAddress(Address address)
+        public async Task UpdateAddress(Address address)
         {
-            using (var conn = new SqlConnection(_databaseConnection))
+            await using var conn = new SqlConnection(_databaseConnection);
+            try
             {
-                try
-                {
-                    conn.Open();
+                await conn.OpenAsync();
 
-                    var sql = "SPU_Address";
+                var sql = "SPU_Address";
 
-                    await conn.ExecuteAsync(sql, new { AddressId = address.Id, Place = address.Place }, commandType: System.Data.CommandType.StoredProcedure); // Ajustado os nomes dos parâmetros
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                await conn.ExecuteAsync(sql,
+                    new { AddressId = address.Id, Place = address.Place },
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
+        public async Task DeleteAddress(int addressId)
+        {
+            await using var conn = new SqlConnection(_databaseConnection);
+            try
+            {
+                await conn.OpenAsync();
 
-        public void DeleteAddress(Address address) =>
-            _context.Address.Remove(address);
+                var sql = "SPD_Address";
 
-        public Address GetAddressById(int addressId) =>
-            _context.Address
-                .Include(x => x.Customer).ThenInclude(u => u.Users)
-                .FirstOrDefault(x => x.Id == addressId);
+                await conn.ExecuteAsync(sql,
+                    new { AddressId = addressId },
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Address> GetAddressById(int addressId)
+        {
+            await using var conn = new SqlConnection(_databaseConnection);
+            try
+            {
+                await conn.OpenAsync();
+
+                var sql = "SPS_AddressById";
+
+                var addressDictionary = new Dictionary<int, Address>();
+
+                var result = await conn.QueryAsync<Address, Customer, User, Address>(
+                    sql,
+                    (address, customer, user) =>
+                    {
+                        if (!addressDictionary.TryGetValue(address.Id, out var addressEntry))
+                        {
+                            addressEntry = address;
+                            addressEntry.Customer = customer ?? new Customer();
+                            addressEntry.Customer.Users = new List<User>();
+                            addressDictionary.Add(address.Id, addressEntry);
+                        }
+
+                        if (user != null)
+                        {
+                            addressEntry.Customer.Users.Add(user);
+                        }
+
+                        return addressEntry;
+                    },
+                    new { AddressId = addressId },
+                    commandType: System.Data.CommandType.StoredProcedure,
+                    splitOn: "Id"
+                );
+
+                return result.FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task<List<Address>> GetAddressesByCustomerId(int customerId)
         {
-            IEnumerable<Address> list;
-            using (var conn = new SqlConnection(_databaseConnection))
+            await using var conn = new SqlConnection(_databaseConnection);
+            try
             {
-                try
-                {
-                    conn.Open();
+                await conn.OpenAsync();
 
-                    var sql = "SPS_Address";
+                var sql = "SPS_Address";
 
-                    list = await conn.QueryAsync<Address>(sql, new { CustomerId = customerId }, commandType: System.Data.CommandType.StoredProcedure); // Ajustado o nome do parâmetro
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                var list = await conn.QueryAsync<Address>(
+                    sql,
+                    new { CustomerId = customerId },
+                    commandType: System.Data.CommandType.StoredProcedure);
 
-                return list?.ToList();
+                return list?.ToList() ?? new List<Address>();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
-
     }
 }

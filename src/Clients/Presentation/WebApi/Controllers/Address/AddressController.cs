@@ -11,10 +11,12 @@ namespace WebApi.Controllers.Address
     public class AddressController : MainController
     {
         private readonly IAddressService _service;
+        private readonly INotificationContext _notification;
 
-        public AddressController(IAddressService service)
+        public AddressController(IAddressService service, INotificationContext notification)
         {
             _service = service;
+            _notification = notification;
         }
 
         /// <summary>
@@ -27,7 +29,12 @@ namespace WebApi.Controllers.Address
         [Route("place/{customerId}")]
         public async Task<IActionResult> AddAddress(int customerId, [FromBody] AddressDto address)
         {
-            return Ok(await _service.AddAddressAsync(UserLoggedId, customerId, address));
+            var result = await _service.AddAddressAsync(UserLoggedId, customerId, address);
+
+            if (_notification.HasNotifications)
+                return BadRequest(_notification.Notifications);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -37,13 +44,25 @@ namespace WebApi.Controllers.Address
         /// <returns></returns>
         [HttpGet]
         [Route("place/{addressId}")]
-        public IActionResult GetAddress(int addressId)
+        public async Task<IActionResult> GetAddress(int addressId)
         {
-            return Ok(_service.GetAddressById(UserLoggedId, addressId));
+            var address = await _service.GetAddressById(UserLoggedId, addressId);
+
+            if (_notification.HasNotifications)
+            {
+                return BadRequest(_notification.Notifications);
+            }
+
+            if (address == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(address);
         }
 
         /// <summary>
-        /// Buscar um logradouros de um cliente
+        /// Buscar logradouros de um cliente
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
@@ -51,7 +70,12 @@ namespace WebApi.Controllers.Address
         [Route("places/{customerId}")]
         public async Task<IActionResult> GetAddressByCustomerId(int customerId)
         {
-            return Ok(await _service.GetAddressesByCustomerIdAsync(UserLoggedId, customerId));
+            var addresses = await _service.GetAddressesByCustomerIdAsync(UserLoggedId, customerId);
+
+            if (_notification.HasNotifications)
+                return BadRequest(_notification.Notifications);
+
+            return Ok(addresses);
         }
 
         /// <summary>
@@ -64,7 +88,11 @@ namespace WebApi.Controllers.Address
         public async Task<IActionResult> DeleteAddress(int addressId)
         {
             await _service.DeleteAddressAsync(UserLoggedId, addressId);
-            return Ok(new Tuple<string>("Logradouro deletado com sucesso"));
+
+            if (_notification.HasNotifications)
+                return BadRequest(_notification.Notifications);
+
+            return Ok(new { Message = "Logradouro deletado com sucesso" });
         }
 
         /// <summary>
@@ -79,7 +107,11 @@ namespace WebApi.Controllers.Address
         public async Task<IActionResult> UpdateAddress(int customerId, int addressId, [FromBody] AddressDto address)
         {
             await _service.UpdateAddressAsync(UserLoggedId, customerId, addressId, address);
-            return Ok(new Tuple<string>("Logradouro atualizado com sucesso"));
+
+            if (_notification.HasNotifications)
+                return BadRequest(_notification.Notifications);
+
+            return Ok(new { Message = "Logradouro atualizado com sucesso" });
         }
     }
 }
