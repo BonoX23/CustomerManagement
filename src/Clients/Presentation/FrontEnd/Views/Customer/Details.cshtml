@@ -1,0 +1,98 @@
+﻿@model FrontEnd.Models.CustomerModel
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="me-auto">Detalhes do Cliente</h2>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2">
+                <i class="fas fa-edit"></i> Editar Cliente
+            </a>
+            <button class="btn btn-outline-danger" onclick="confirmDelete(@Model.Id)">
+                <i class="fas fa-trash"></i> Excluir Cliente
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-4 text-muted">Nome:</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.Name</dd>
+
+                    <dt class="col-sm-4 text-muted">Email:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+                </dl>
+            </div>
+
+            <div class="col-md-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.Logo))
+                {
+                    <img src="@Model.Logo" alt="Logo do Cliente @Model.Name" class="img-fluid rounded shadow-sm" style="max-width: 120px;" />
+                }
+                else
+                {
+                    <div class="text-muted">Sem logo disponível</div>
+                }
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="mt-4">
+            <h4><i class="fas fa-map-marker-alt"></i> Endereços</h4>
+            @if (Model.Places != null && Model.Places.Any())
+            {
+                <ul class="list-group list-group-flush w-75">
+                    @foreach (var place in Model.Places)
+                    {
+                        <li class="list-group-item">
+                            <i class="fas fa-location-dot text-primary me-2"></i> @place.Place
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Nenhum endereço cadastrado.</p>
+                <a asp-action="AddAddress" asp-route-customerId="@Model.Id" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Adicionar Endereço
+                </a>
+            }
+        </div>
+
+        <div class="mt-4 text-center">
+            <button onclick="logout()" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function logout() {
+            sessionStorage.removeItem('AuthToken');
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+
+        function confirmDelete(id) {
+            if (confirm("Deseja realmente excluir este cliente?")) {
+                fetch(`/Customer/Delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '@Url.Action("Index", "Home")';
+                    } else {
+                        alert("Erro ao excluir o cliente.");
+                    }
+                }).catch(error => {
+                    console.error("Erro:", error);
+                    alert("Ocorreu um erro ao excluir o cliente.");
+                });
+            }
+        }
+    </script>
+}

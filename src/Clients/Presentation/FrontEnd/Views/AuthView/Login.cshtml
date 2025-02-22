@@ -1,0 +1,50 @@
+﻿@model FrontEnd.Models.UserModel
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 350px;">
+        <h2 class="text-center mb-4">Login</h2>
+
+        <form asp-action="Login" method="post">
+            <div class="mb-3">
+                <label asp-for="Login" class="form-label">Email do Usuário</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input asp-for="Login" type="email" class="form-control" placeholder="Digite seu email" required />
+                </div>
+                <span asp-validation-for="Login" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Senha</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Digite sua senha" required />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mt-3 text-center" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            else if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mt-3 text-center" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+}

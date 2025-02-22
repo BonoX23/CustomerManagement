@@ -1,0 +1,24 @@
+﻿@{
+    var senha = TempData["SenhaGerada"] as string;
+}
+
+<h2>Cadastro Realizado com Sucesso!</h2>
+<p>Utilize seu email como login e a senha abaixo para acessar sua conta:</p>
+
+<div class="alert alert-success">
+    <strong>Sua Senha:</strong> <span id="senha">@senha</span>
+</div>
+
+<p>Você será redirecionado para a página de login em <span id="contador">5</span> segundos...</p>
+
+<script>
+    let contador = 5;
+    const intervalo = setInterval(() => {
+        contador--;
+        document.getElementById("contador").textContent = contador;
+        if (contador <= 0) {
+            clearInterval(intervalo);
+            window.location.href = "/AuthView/Login";
+        }
+    }, 1000);
+</script>

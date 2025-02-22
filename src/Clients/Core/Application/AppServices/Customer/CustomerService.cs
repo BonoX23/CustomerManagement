@@ -102,18 +102,28 @@ namespace Application.AppServices
 
         public async Task UpdateCustomerAsync(int userId, int customerId, CustomerDto customerDto)
         {
+            Console.WriteLine($"Recebendo atualização para ID: {customerId}");
+            Console.WriteLine($"Nome: {customerDto.Name}, Email: {customerDto.Email}, Logo: {customerDto.Logo}");
+
             var customerDomain = _repository.GetCustomerById(customerId);
 
             if (customerDomain == null)
+            {
                 _notification.AddNotification(new Notification("Cliente não existe"));
+                Console.WriteLine("Erro: Cliente não encontrado!");
+            }
 
             if (customerDomain != null && !customerDomain.Users.All(x => x.Id == userId))
             {
                 _notification.AddNotification(new Notification("Ação não permitida, permissão negada!"));
+                Console.WriteLine("Erro: Permissão negada!");
             }
 
             if (!string.IsNullOrEmpty(customerDto.Email) && _repository.IsEmailValidForUpdate(customerId, customerDto.Email))
+            {
                 _notification.AddNotification(new Notification("E-mail já cadastrado"));
+                Console.WriteLine("Erro: E-mail já cadastrado!");
+            }
 
             if (!_notification.HasNotifications)
             {
@@ -126,11 +136,15 @@ namespace Application.AppServices
                 customerDomain.Validate();
 
                 if (customerDomain.Invalid)
+                {
                     _notification.AddNotificationFromValidationResult(customerDomain.ValidationResult);
+                    Console.WriteLine("Erro: Validação do cliente falhou!");
+                }
                 else
                 {
                     _repository.UpdateCustomer(customerDomain);
                     await _repository.UnitOfWork.Commit();
+                    Console.WriteLine("Cliente atualizado com sucesso!");
                 }
             }
         }

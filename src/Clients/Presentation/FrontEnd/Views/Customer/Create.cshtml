@@ -1,0 +1,52 @@
+﻿@model FrontEnd.Models.CustomerModel
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4 text-center"><i class="fas fa-user-plus"></i> Criar Cliente</h2>
+
+        <form asp-action="Create" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Nome -->
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label"><i class="fas fa-user"></i> Nome</label>
+                        <input asp-for="Name" class="form-control" placeholder="Digite o nome do cliente" required />
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Digite o email do cliente" required />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Logo -->
+                    <div class="form-group mb-3">
+                        <label asp-for="Logo" class="form-label"><i class="fas fa-image"></i> Logo</label>
+                        <input asp-for="Logo" class="form-control" placeholder="URL da logo" />
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- Endereço -->
+            <h4 class="mt-4"><i class="fas fa-map-marker-alt"></i> Endereço</h4>
+            <div class="form-group mb-3">
+                <input asp-for="Places[0].Place" class="form-control" placeholder="Digite um endereço" required />
+            </div>
+
+            <!-- Botão Criar -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fas fa-save"></i> Criar Cliente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

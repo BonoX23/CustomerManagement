@@ -1,137 +1,127 @@
 # Customer Management
 
-> **Status do Projeto**: ✅ Em andamento
+> **Status do Projeto**: ✅ Concluído
 
 ## 📌 Tópicos
 
-- 🔹 [Descrição do projeto](#descrição-do-projeto)
-- 🔹 [Solicitação do Cliente](#solicitação-do-cliente)
-- 🔹 [Funcionalidades](#funcionalidades)
-- 🔹 [Pré-requisitos](#pré-requisitos)
-- 🔹 [Como rodar a aplicação](#como-rodar-a-aplicação)
-- 🔹 [Resumo](#resumo)
-- 🔹 [Tecnologias implementadas](#tecnologias-implementadas)
-- 🔹 [Arquitetura](#arquitetura)
-- 🔹 [Segurança](#segurança)
-- 🔹 [Licença](#licença)
-
----
+- [Descrição do Projeto](#descrição-do-projeto)
+- [Solicitação do Cliente](#solicitação-do-cliente)
+- [Funcionalidades](#funcionalidades)
+- [Pré-requisitos](#pré-requisitos)
+- [Tecnologias Implementadas](#tecnologias-implementadas)
+- [Arquitetura](#arquitetura)
+- [Segurança](#segurança)
+- [Licença](#licença)
 
 ## 📖 Descrição do Projeto
 
-O projeto consiste em uma **API para gerenciamento de clientes**.  
-Para acessar alguns endpoints, é necessário **autenticação com dados de usuário**. Após autenticado, o usuário pode acessar todas as funcionalidades da API, enviando sempre o **token recebido** no cabeçalho das requisições.
+Projeto de uma aplicação para gerenciamento de clientes. O usuário acessa a aplicação por meio de um Frontend desenvolvido em MVC, que consome uma API REST.
+Para utilizar alguns endpoints da API, é necessário estar autenticado com credenciais de usuário. Após a autenticação, é possível acessar todas as funcionalidades da API, 
+passando sempre o token recebido no cabeçalho das requisições.
 
----
+## 📝 Solicitação do Cliente
 
-## 🎯 Solicitação do Cliente
+- Deve ser possível criar, atualizar, visualizar e remover clientes.
+  - O cadastro dos clientes deve conter apenas os seguintes campos:
+    - Nome
+    - E-mail
+    - Logotipo
+    - Endereço (um cliente pode conter vários endereços)
+  - Um cliente não pode se registrar duas vezes com o mesmo endereço de e-mail.
+  - Deve ser possível criar, atualizar, visualizar e remover os endereços dos clientes.
+  - O acesso à API deve ser aberto ao público, porém deve possuir autenticação e autorização.
+  - A API deve ser otimizada para lidar com um grande volume de requisições.
 
-- Deve ser possível **criar, atualizar, visualizar e remover clientes**.
-- O cadastro do cliente deve conter:
-  - Nome
-  - E-mail (não pode ser duplicado)
-  - Logotipo
-  - Endereço (um cliente pode ter vários endereços)
-- Deve ser possível **criar, atualizar, visualizar e remover endereços**.
-- O acesso à API deve ser **aberto**, mas requer **autenticação e autorização**.
-- A API deverá **suportar alto volume de requisições**, com preocupação constante com **performance**.
+## ⚙️ Funcionalidades
 
----
+✔️ **Cadastro de Clientes**: É possível realizar cadastros de clientes. Para cada cliente cadastrado, será gerado um usuário para manutenção dos dados.
 
-## 🚀 Funcionalidades
+✔️ **Cadastro de Endereços**: É possível cadastrar múltiplos endereços para um determinado cliente.
 
-✅ **Cadastro de Clientes**: Um usuário será gerado para manutenção dos dados.  
-✅ **Cadastro de Endereços**: Clientes podem ter múltiplos endereços cadastrados.  
-✅ **Autenticação**: Login na API e possibilidade de alterar senha após autenticado.  
+✔️ **Autenticação**: É possível se autenticar na aplicação e acessar as funcionalidades do sistema após o login.
 
----
+## 🛠 Pré-requisitos
 
-## 🔧 Pré-requisitos
+Caso execute o projeto localmente, será necessário:
 
-Para rodar o projeto localmente, é necessário:
+- ⚠️ .NET Core SDK 6.0
+- ⚠️ SQL Server
+- ⚠️ Visual Studio 2022 ou VS Code
 
-- ⚠️ **.NET Core SDK 6.0**
-- ⚠️ **SQL Server**
-- ⚠️ **Visual Studio 2022** ou **VS Code**
+## 🚀 Como Rodar a Aplicação
 
----
+### 🔹 Clonando o Repositório
 
-## ▶ Como Rodar a Aplicação
-
-### Clonando o projeto:
+Abra um terminal e execute:
 
 ```sh
 git clone https://github.com/BonoX23/CustomerManagement.git
 ```
 
-### 🔹 Executar via Visual Studio Community 2022:
+### 🔹 Executando no Visual Studio Community 2022 (método recomendado)
 
-1. Acesse a pasta `src\Clients` e abra a solução `Clients.sln`.
-2. Faça **restore** dos pacotes NuGet.
-3. Defina `WebApi` como **Startup Project**.
-4. No arquivo `appsettings.json`, configure a **string de conexão (DefaultConnection)** para acesso ao SQL Server.
-5. Execute com `F5` ou `Ctrl + F5`.
-6. O Swagger será exibido com os endpoints disponíveis.
+1. Vá até a pasta `src/Clients` e abra a solução `Clients.sln`.
+2. Faça o restore dos pacotes NuGet.
+3. No menu de seleção de projetos de inicialização, clique na setinha lateral e selecione **Múltiplos Projetos de Inicialização**.
+4. Marque os projetos `WebAPI` e `FrontEnd` como startup e clique em **OK**.
+5. No arquivo `appsettings.json`, configure a string de conexão `DefaultConnection` com os dados de acesso ao SQL Server.
+6. Execute o projeto pressionando `F5` ou `Ctrl+F5`.
+7. O navegador abrirá a aplicação com a interface MVC.
 
-### 🔹 Executar via terminal:
+### 🔹 Executando via Terminal
 
-1. Acesse `src\Clients\Presentation\WebAPI`.
-2. No `appsettings.json`, configure a **string de conexão (DefaultConnection)**.
-3. Abra o terminal e execute:
+1. Acesse a pasta `src/Clients/Presentation/WebAPI`.
+2. Edite o arquivo `appsettings.json` e ajuste a string de conexão `DefaultConnection`.
+3. Abra um terminal e execute:
+   ```sh
+   dotnet restore
+   dotnet run
+   ```
+4. Abra outro terminal e vá até `src/Clients/Presentation/FrontEnd`.
+5. Execute o Frontend:
+   ```sh
+   dotnet run
+   ```
+6. O navegador **não** abrirá automaticamente a aplicação MVC.
 
-```sh
-dotnet restore
-dotnet run
-```
-
-4. Após a compilação, acesse no navegador:
-
-   - [https://localhost:7094/swagger/index.html](https://localhost:7094/swagger/index.html)
-   - [http://localhost:5093/swagger/index.html](http://localhost:5093/swagger/index.html)
-
----
+7. Acesse manualmente no navegador:
+   [https://localhost:7296/](https://localhost:7296/)
 
 ## 📌 Resumo
 
-- Os endpoints `api/v1/auth` e `api/v1/cliente` são **públicos** (não requerem autenticação).  
-- O cadastro de um cliente gera automaticamente um **usuário**, e a senha inicial é retornada na resposta.  
-- O **token de autenticação** tem validade de **90 minutos**.  
-- Endpoints `/api/v1/address` são para **manutenção de endereços**.  
-- Endpoints `/api/v1/cliente` são para **manutenção de clientes** (excluir cliente remove também os endereços e usuário associado).  
-- Para **alterar senha**, use `api/v1/auth/update-password` (autenticado).  
+- Ao iniciar a aplicação você será direcionado a tela de boas vindas, onde poderá cadastrar um cliente ou logar um cliente existente.
+- Para ter acesso aos detalhes do cliente cadastrado, é necessário sua autennticação na área de login.
+- Ao cadastrar um cliente você será redireciano a tela de detalhes do cliente cadastrado, onde poderá também cadastrar mais de um endereço como também alterar o nome do cliente.
 
----
 
-## 🛠 Tecnologias Implementadas
+## 🏗 Tecnologias Implementadas
 
-- **ASP.NET Core 6.0**
-- **ASP.NET Web API**
-- **Entity Framework**
-- **Dapper**
-- **SQL Server**
-- **Swagger UI**
-- **Migrations**
-- **FluentValidation**
-- **Filters Exceptions**
+- **Backend**
+  - ASP.NET Core 6.0
+  - ASP.NET WebAPI Core
+  - Entity Framework
+  - Dapper
+  - SQL Server
+  - Swagger UI
+  - Migrations
+  - FluentValidation
+  - Filters Exceptions
 
----
+- **Frontend**
+  - MVC (Model-View-Controller)
 
 ## 🏛 Arquitetura
 
-- **Princípios SOLID e Clean Code**
-- **Design Orientado por Domínio (DDD)**
-- **Eventos e Notificações de Domínio**
-- **Padrão Repositório**
-- **Injeção de Dependência**
-
----
+- Arquitetura baseada em princípios **SOLID** e **Clean Code**.
+- Design orientado a domínio (**DDD**).
+- Implementação de **Eventos de Domínio**.
+- Utilização do **Padrão de Repositório**.
+- Injeção de dependências para melhor organização do código.
 
 ## 🔒 Segurança
 
-- Autenticação via **JWT Bearer Tokens**.
-
----
+- Autenticação baseada em **JWT Bearer Tokens**.
 
 ## 📜 Licença
 
-© 2025 - Customer Management
+&copy; 2025 - Customer Management

@@ -23,8 +23,8 @@ namespace Application.AppServices
         private readonly TokenConfiguration _tokenConfigurations;
 
         public AuthService(INotificationContext notification,
-                                 IAuthRepository repository,
-                                 IConfiguration config)
+                           IAuthRepository repository,
+                           IConfiguration config)
         {
             _config = config;
             _repository = repository;
@@ -33,9 +33,10 @@ namespace Application.AppServices
 
             _tokenConfigurations = new TokenConfiguration();
             new ConfigureFromConfigurationOptions<TokenConfiguration>(config
-                            .GetSection("TokenConfigurations"))
-                            .Configure(_tokenConfigurations);
+                .GetSection("TokenConfigurations"))
+                .Configure(_tokenConfigurations);
         }
+
         public async Task<AuthResponseDto> AutenticateAsync(AuthDto auth)
         {
             if (string.IsNullOrEmpty(auth.Login))
@@ -63,7 +64,7 @@ namespace Application.AppServices
 
         public async Task UpdateUserPasswordAsync(int userId, UserDto user)
         {
-           var userDomain  =_repository.GetUserById(userId);
+            var userDomain = _repository.GetUserById(userId);
 
             if (userDomain == null)
             {
@@ -90,8 +91,9 @@ namespace Application.AppServices
         {
             var claims = new List<Claim>
             {
-               new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Login),
+                new Claim("CustomerId", user.Customer.Id.ToString())
             };
 
             var dateExpiration = DateTime.UtcNow.AddMinutes(_tokenConfigurations.Seconds);
@@ -113,7 +115,8 @@ namespace Application.AppServices
             {
                 Token = token,
                 UserName = user.Customer.Name,
-                ExpireIn = _tokenConfigurations.Seconds
+                ExpireIn = _tokenConfigurations.Seconds,
+                CustomerId = user.Customer.Id
             };
         }
     }
